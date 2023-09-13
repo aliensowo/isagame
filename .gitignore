@@ -1,3 +1,6 @@
 venv/
-.idea/
+.idea/*
 my_database.db
+client/images/used_bioms/*/*.*
+client/images/used_resources/*/*.*
+client/images/map_directory/*
