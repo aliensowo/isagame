@@ -2,9 +2,9 @@ from typing import DefaultDict
 
 
 class MapBioWeights(DefaultDict):
-    green = 65
-    water = 15
-    mountain = 20
+    green = 30
+    water = 25
+    mountain = 25
 
 
 class WoodWeights(DefaultDict):

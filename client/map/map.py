@@ -62,7 +62,7 @@ class Map:
                 map_image.paste(paste_image, (x_axis * self._texture_size, y_axis * self._texture_size))
 
                 self._mask[y_axis][x_axis] = curr_point
-        map_image.save(f"../images/map_directory/{self._map}")
+        map_image.save(f"../images/map_directory/g{MapBioWeights.green}_w{MapBioWeights.water}_m{MapBioWeights.mountain}_{self._map}")
 
     def _generate_element(self, curr_point: str) -> Image:
         if curr_point == SymbolAssociation.green:
@@ -82,11 +82,11 @@ class Map:
     def _default_boost_values(point: str, boost: Dict) -> tuple:
         """ boost = {"green_boost": cur_value, ... }"""
         if point == SymbolAssociation.green:
-            green_boost, water_boost, mountain_boost = 10, -5, -5
+            green_boost, water_boost, mountain_boost = 20, -15, -15
         elif point == SymbolAssociation.water:
-            green_boost, water_boost, mountain_boost = -5, 10, -5
+            green_boost, water_boost, mountain_boost = -15, 20, -15
         elif point == SymbolAssociation.mountain:
-            green_boost, water_boost, mountain_boost = -5, -5, 10
+            green_boost, water_boost, mountain_boost = -15, -15, 20
         elif point is None:
             green_boost, water_boost, mountain_boost = 0, 0, 0
         else:
@@ -102,9 +102,9 @@ class Map:
             [WoodAssociation.wood, WoodAssociation.none],
             weights=[WoodWeights.wood, WoodWeights.none]
         )[0]
-        paste_image = Image.open("../images/used_resources/green16x16.jpg")
+        paste_image = Image.open("../images/used_bios/green16x16.jpg")
         if resource:
-            resource_image = Image.open("../images/used_bios/wood4x4.png")
+            resource_image = Image.open("../images/used_resources/wood4x4.png")
             count = random.randint(1, 4)
             for wood_number in range(count):
                 paste_image.paste(
@@ -119,9 +119,9 @@ class Map:
             [FishAssociation.fish, FishAssociation.none],
             weights=[FishWeights.fish, WoodWeights.none]
         )[0]
-        paste_image = Image.open("../images/used_resources/water16x16.jpg")
+        paste_image = Image.open("../images/used_bios/water16x16.jpg")
         if resource:
-            resource_image = Image.open("../images/used_bios/fish4x4.png")
+            resource_image = Image.open("../images/used_resources/fish4x4.png")
             count = random.randint(1, 4)
             for fish_number in range(count):
                 paste_image.paste(
@@ -132,7 +132,7 @@ class Map:
 
     @staticmethod
     def _generate_stone() -> Image:
-        paste_image = Image.open("../images/used_resources/mountain16x16.jpg")
+        paste_image = Image.open("../images/used_bios/mountain16x16.jpg")
         return paste_image
 
 
