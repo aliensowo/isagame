@@ -2,6 +2,8 @@ import random
 import arcade
 from PIL import Image
 
+from client.map.map import Map
+
 SPRITE_SCALING_PLAYER = 0.5
 MOVEMENT_SPEED = 5
 SPRITE_SCALING_COIN = .25
@@ -34,13 +36,13 @@ class Player(arcade.Sprite):
             self.top = SCREEN_HEIGHT - 1
 
 
-class MyGame(arcade.Window):
+class MyGame(arcade.View):
     """ Our custom Window Class"""
 
     def __init__(self):
         """ Initializer """
         # Call the parent class initializer
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+        super().__init__()
 
         # Variables that will hold sprite lists
         self.player_list = None
@@ -50,15 +52,16 @@ class MyGame(arcade.Window):
         self.player_sprite = None
         self.score = 0
 
-        # Don't show the mouse cursor
-        self.set_mouse_visible(False)
+        # # Don't show the mouse cursor
+        # self.set_mouse_visible(False)
 
         # arcade.set_background_color(arcade.color.AMAZON)
-        img = Image.open("../images/map_directory/g30_w25_m25_s(100, 100)_t1694637320/map_1694637320.jpeg")
-        width, height = img.size
-        p1_img = img.crop((0, int(width / 2), 0, int(height / 2)))
-        p1_img.save("../images/map_directory/g30_w25_m25_s(100, 100)_t1694637320/map_1694637320_1.jpeg")
-        arcade.load_texture("../images/map_directory/g30_w25_m25_s(100, 100)_t1694637320/map_1694637320_1.jpeg")
+        arcade.load_texture(self._map_generate())
+
+    @staticmethod
+    def _map_generate():
+        map = Map(max_size=(10, 10))
+        return map.generate_map()
 
     def setup(self):
         """ Set up the game and initialize the variables. """
@@ -143,12 +146,9 @@ class MyGame(arcade.Window):
             self.score += 1
 
 
-def main():
+def run():
     """ Main function """
     window = MyGame()
     window.setup()
     arcade.run()
 
-
-if __name__ == "__main__":
-    main()

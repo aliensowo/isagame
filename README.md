@@ -8,6 +8,8 @@ python -m server
 
     http://127.0.0.1:8000/docs
 
-# Client commands
+# Client start
 
-    in develop
+```commandline
+python -m client
+```

@@ -4,15 +4,15 @@ from typing import Dict
 import os
 
 from client.map.map_error import MapGenerateError, SymbolAssociationError
-from map_types import SymbolAssociation, WoodAssociation, StoneAssociation, FishAssociation
-from resources_weights import MapBioWeights, WoodWeights, StoneWeights, FishWeights
+from client.map.map_types import SymbolAssociation, WoodAssociation, StoneAssociation, FishAssociation
+from client.map.resources_weights import MapBioWeights, WoodWeights, StoneWeights, FishWeights
 from PIL import Image
 
 
 # TODO: batch generation?
 class Map:
     _mask: list[list]
-    _mask_size: tuple = (100, 100)  # MAX SIZE TO GENERATE!! Image size around 280-300mb
+    _mask_size: tuple = (100, 100)  # (100, 100) MAX SIZE TO GENERATE!! Image size around 280-300mb
     _map: str
     _dict_textures_info = {
         "biom": {
@@ -27,10 +27,23 @@ class Map:
         }
     }
 
-    def __init__(self):
+    def __init__(self, max_size: tuple = (100, 100)):
+        self._dirs_prepare()
+        self._mask_size = max_size
         self._map = f"map_{int(time.time())}.jpeg"
         self._scale_image()
         self._generate_mask()
+
+    def _dirs_prepare(self):
+        for key, value in self._dict_textures_info.items():
+            try:
+                os.mkdir(value["used_texture"])
+            except FileExistsError:
+                pass
+        try:
+            os.mkdir("../images/map_directory")
+        except FileExistsError:
+            pass
 
     def _generate_mask(self):
         self._mask = [[None for _ in range(self._mask_size[0])] for _ in range(self._mask_size[1])]
@@ -117,6 +130,10 @@ class Map:
                 f"{self._map}"
             ])
         )
+        return "/".join([
+                dir_for_map,
+                f"{self._map}"
+            ])
 
     def _generate_element(self, curr_point: str) -> Image:
         if curr_point == SymbolAssociation.green:
@@ -207,7 +224,7 @@ class Map:
 
 if __name__ == '__main__':
     mapp = Map()
-    mapp.generate_map()
+    img_path = mapp.generate_map()
     mmaapp = mapp.get_map()
     # for row in mmaapp:
     #     print(row)
