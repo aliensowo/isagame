@@ -1,4 +1,5 @@
-# Server start
+# Server
+## Server start
 
 ```commandline
 python -m server
@@ -8,8 +9,14 @@ python -m server
 
     http://127.0.0.1:8000/docs
 
-# Client start
+# Client
+## Client start
+
 
 ```commandline
 python -m client
 ```
+
+## TODO:
+
+- generate json schema of map
