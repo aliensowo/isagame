@@ -157,27 +157,15 @@ class Map:
             for x_axis in range(len(self._mask[y_axis])):
                 green_boost, water_boost, mountain_boost = (0, 0, 0)
                 try:
-                    left_point = self._mask[y_axis][x_axis - 1]
-                    green_boost, water_boost, mountain_boost = self._default_boost_values(
-                        point=left_point,
-                        boost={"green_boost": green_boost, "water_boost": water_boost, "mountain_boost": mountain_boost}
-                    )
-                except IndexError:
-                    pass
-                try:
-                    up_point = self._mask[y_axis - 1][x_axis]
-                    green_boost, water_boost, mountain_boost = self._default_boost_values(
-                        point=up_point,
-                        boost={"green_boost": green_boost, "water_boost": water_boost, "mountain_boost": mountain_boost}
-                    )
-                except IndexError:
-                    pass
-                try:
-                    up_right_point = self._mask[y_axis - 1][x_axis + 1]
-                    green_boost, water_boost, mountain_boost = self._default_boost_values(
-                        point=up_right_point,
-                        boost={"green_boost": green_boost, "water_boost": water_boost, "mountain_boost": mountain_boost}
-                    )
+                    for point in [
+                        self._mask[y_axis][x_axis - 1],  # left point
+                        self._mask[y_axis - 1][x_axis],  # up point
+                        self._mask[y_axis - 1][x_axis + 1],  # up right point
+                    ]:
+                        green_boost, water_boost, mountain_boost = self._default_boost_values(
+                            point=point,
+                            boost={"green_boost": green_boost, "water_boost": water_boost, "mountain_boost": mountain_boost}
+                        )
                 except IndexError:
                     pass
                 curr_point = random.choices(
