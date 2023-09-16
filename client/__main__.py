@@ -31,6 +31,7 @@ player_img = pygame.image.load(os.path.join(img_folder, 'sprites/mario_thumb.png
 background = pygame.image.load(
     os.path.join(img_folder, "map_directory/g30_w25_m25_s(10, 10)_t1694640220/map_1694640219.jpeg")).convert()
 
+# TODO: активно в окне сделать показ только одного биома
 
 class Camera:
     def __init__(self, x, y):

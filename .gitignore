@@ -1,7 +1,20 @@
 venv/
 .idea/*
+.DS_Store
+*/.DS_Store
+*/*/.DS_Store
+*/*/*/.DS_Store
+*/*/*/*/.DS_Store
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*/*/*/__pycache__/
+*/*/*/*/__pycache__
 my_database.db
 client/images/used_bioms/*/*.*
 client/images/used_resources/*/*.*
 client/images/map_directory/*/*.jpeg
+client/images/map_directory/*/*.json
 !client/images/map_directory/g30_w25_m25_s(10, 10)_t1694640220/map_1694640219.jpeg
+!client/images/map_directory/g30_w25_m25_s(50, 50)_t1694823254/map_1694823254.jpeg
+!client/images/map_directory/g30_w25_m25_s(50, 50)_t1694823254/system.json
