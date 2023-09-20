@@ -1,116 +1,90 @@
-# Игра Shmup - 1 часть
-# Cпрайт игрока и управление
-import pygame
-import random
+# Pygame шаблон - скелет для нового проекта Pygame
 import os
+import math
+from typing import List
 
-WIDTH = 1200
-HEIGHT = 720
-FPS = 60
-SPEED = 1
-
-# Задаем цвета
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)
+import pygame
+from client.class_logic.logic import Logic
+from client.settings import (
+    images_dir,
+    WIDTH,
+    HEIGHT,
+    FPS,
+    BLACK,
+    GREEN,
+    BLUE,
+    curr_node,
+    turn_flag
+)
+from client.class_user.user import User
+from client.class_resourse.resource import Resources
 
 # Создаем игру и окно
 pygame.init()
 pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Shmup!")
+pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
-
-# настройка папки ассетов
-game_folder = os.path.dirname(__file__)
-img_folder = os.path.join(game_folder, 'images')
-player_img = pygame.image.load(os.path.join(img_folder, 'sprites/mario_thumb.png')).convert()
-background = pygame.image.load(
-    os.path.join(img_folder, "map_directory/g30_w25_m25_s(10, 10)_t1694640220/map_1694640219.jpeg")).convert()
-
-# TODO: активно в окне сделать показ только одного биома
-
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = player_img
-        self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH / 2, HEIGHT / 2)
-        # self.rect.centerx = 0
-        # self.rect.bottom = 0
-
-    def get_rect_x(self) -> int:
-        return self.rect.x
-
-    def get_rect_y(self) -> int:
-        return self.rect.y
-
-    def move(self, vector_list: list):
-        self.rect.x += vector_list[0]
-        if self.rect.y >= -230:
-            self.rect.y += vector_list[1]
-        else:
-            self.rect.y -= vector_list[1] * 2
-    #
-    # def draw(self):
-    #     # Игрок на самом окне не двигается, двигается мир вокруг него
-    #     pygame.draw.rect(screen, (150, 0, 0), (240, 240, 10, 10))
-
-
 all_sprites = pygame.sprite.Group()
-player = Player()
+mobs = pygame.sprite.Group()
+player = User()
 all_sprites.add(player)
-camera = Camera(0, 0)
+
+# global param
+global turn_flag
+global curr_node
+
+# prepare biom 0
+biom_image_path, resources = Logic.get_image(curr_node)
+background = pygame.image.load(biom_image_path)
+for res, res_value in resources.items():
+    m = Resources(image=res_value["path"], x=res_value["x_biom"], y=res_value["y_biom"])
+    all_sprites.add(m)
+    mobs.add(m)
+
+font = pygame.font.Font('freesansbold.ttf', 32)
 
 # Цикл игры
 running = True
 while running:
-
+    # Держим цикл на правильной скорости
     clock.tick(FPS)
+    # Ввод процесса (события)
     for event in pygame.event.get():
+        # check for closing window
         if event.type == pygame.QUIT:
             running = False
 
-    vector = [0, 0]
-    keystate = pygame.key.get_pressed()
-    mousestate = pygame.mouse.get_pressed()
-    if mousestate[0]:
-        x, y = pygame.mouse.get_pos()
-        vector[0] = int((x - player.get_rect_x()) / (SPEED * 64))
-        vector[1] = int((y - player.get_rect_y()) / (SPEED * 64))
-    if mousestate[1]:
-        print("property1")
-    if mousestate[2]:
-        # fast move
-        x, y = pygame.mouse.get_pos()
-        vector[0] = int((x - player.get_rect_x()) / (SPEED * 32))
-        vector[1] = int((y - player.get_rect_y()) / (SPEED * 32))
-    if keystate[pygame.K_LEFT]:
-        vector[0] = -SPEED
-    if keystate[pygame.K_RIGHT]:
-        vector[0] = SPEED
-    if keystate[pygame.K_DOWN]:
-        vector[1] = SPEED
-    if keystate[pygame.K_UP]:
-        vector[1] = -SPEED
-
-    # Обновление
-    if vector != [0, 0]:
-        sprite = all_sprites.sprites()
-        if sprite:
-            all_sprites.remove_internal(sprite[0])
-            sprite[0].move(vector)
-            all_sprites.add(sprite[0])
-        camera.move(vector)
-
-    # Рендеринг
+    # Заливаем фон - нижний слой
     screen.fill(BLACK)
-    screen.blit(background, (-camera.rect[0], -camera.rect[1]))
-    all_sprites.draw(screen)
 
+    # Обновление персонажа
+    players_list = all_sprites.sprites()
+    for p in players_list:
+        if isinstance(p, User):
+            turn_flag, curr_node = p.update(turn_flag, curr_node)
+
+    # опредееляем картинку карты
+    if turn_flag:
+        biom_image_path, resources = Logic.get_image(curr_node)
+        background = pygame.image.load(biom_image_path)
+        for m in mobs:
+            all_sprites.remove_internal(m)
+        mobs = pygame.sprite.Group()
+        for res, res_value in resources.items():
+            m = Resources(image=res_value["path"], x=res_value["x_biom"], y=res_value["y_biom"])
+            all_sprites.add(m)
+            mobs.add(m)
+        turn_flag = False
+    screen.blit(background, (0, 0))
+
+    # Выставляем номер биома
+    text = font.render(f'{curr_node}', True, GREEN, BLUE)
+    textRect = text.get_rect()
+    textRect.center = (font.get_height(), font.get_height())
+    screen.blit(text, textRect)
+
+    all_sprites.draw(screen)
     # После отрисовки всего, переворачиваем экран
     pygame.display.flip()
 
