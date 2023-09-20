@@ -33,40 +33,6 @@ background = pygame.image.load(
 
 # TODO: активно в окне сделать показ только одного биома
 
-class Camera:
-    def __init__(self, x, y):
-        self.image = player_img
-        self.rect = pygame.Rect(x, y, 500, 500)
-
-    def move(self, vector_list):
-        # left
-        if vector_list[0] < 0:
-            temp = self.rect[0] + (vector_list[0] - 40)
-            if temp >= -230:
-                self.rect[0] = temp
-            else:
-                self.rect[0] -= vector_list[0] * 2
-        if vector_list[0] > 0:
-            temp = self.rect[0] + (vector_list[0] + 40)
-            if temp >= -230:
-                self.rect[0] = temp
-            else:
-                self.rect[0] -= vector_list[0] * 2
-        # top
-        if vector_list[1] < 0:
-            temp = self.rect[1] + (vector_list[1] - 40)
-            if temp >= -230:
-                self.rect[1] = temp
-            else:
-                self.rect[1] -= vector_list[1] * 2
-        if vector_list[1] > 0:
-            temp = self.rect[1] + (vector_list[1] + 40)
-            if temp >= -230:
-                self.rect[1] = temp
-            else:
-                self.rect[1] -= vector_list[1] * 2
-
-
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
