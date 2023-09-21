@@ -169,7 +169,6 @@ class InventorySlot:
     def draw_items(self, screen):
         if self.item is not None and not self.item.is_moving:
             self.image = pg.image.load(self.item.img).convert_alpha()
-            print(self.x, self.y)
             screen.blit(self.image, (self.x - 7 + 50, self.y - 7 + 70))
         if self.item is not None and self.item.is_moving:
             mousepos1 = pg.mouse.get_pos()
