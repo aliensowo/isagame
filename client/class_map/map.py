@@ -7,9 +7,10 @@ from hashlib import md5
 import json
 from deprecated import deprecated
 
-from client.map.map_error import MapGenerateError, SymbolAssociationError
-from client.map.map_types import SymbolAssociation, WoodAssociation, StoneAssociation, FishAssociation
-from client.map.resources_weights import MapBioWeights, WoodWeights, StoneWeights, FishWeights
+from client.class_map.map_error import MapGenerateError, SymbolAssociationError
+from client.class_map.map_types import SymbolAssociation, WoodAssociation, StoneAssociation, FishAssociation
+from client.class_map.resources_weights import MapBioWeights, WoodWeights, StoneWeights, FishWeights
+from client.settings import images_dir
 from PIL import Image
 
 
@@ -49,13 +50,13 @@ class Map:
     _dict_textures_info = {
         "biom": {
             "texture_size": 512,
-            "original_image_path": "../images/image_original/used_bioms",
-            "used_texture": "../images/used_bioms",
+            "original_image_path": os.path.join(images_dir, "image_original/used_bioms"),
+            "used_texture": os.path.join(images_dir, "used_bioms"),
         },
         "resources": {
             "texture_size": 128,
-            "original_image_path": "../images/image_original/used_resources",
-            "used_texture": "../images/used_resources",
+            "original_image_path": os.path.join(images_dir, "image_original/used_resources"),
+            "used_texture": os.path.join(images_dir, "used_resources"),
         }
     }
     _biom_map: dict
@@ -96,7 +97,10 @@ class Map:
         self._dict_textures_info["biom"]["texture_size"] = biom_size
         self._dict_textures_info["resources"]["texture_size"] = resources_size
         self._dirs_prepare()
-        self._map_dir = f"../images/map_directory/g{MapBioWeights.green}_w{MapBioWeights.water}_m{MapBioWeights.mountain}_s{self._mask_size}_t{self._creation_time}"
+        self._map_dir = os.path.join(
+            images_dir,
+            f"map_directory/g{MapBioWeights.green}_w{MapBioWeights.water}_m{MapBioWeights.mountain}_s{self._mask_size}_t{self._creation_time}"
+        )
         self._map = f"map_{self._creation_time}.jpeg"
         self._scale_image()
         self._generate_mask()
@@ -108,16 +112,13 @@ class Map:
             except FileExistsError:
                 pass
         try:
-            os.mkdir("../images/map_directory")
+            os.mkdir(os.path.join(images_dir, "map_directory"))
         except FileExistsError:
             pass
 
     def _generate_mask(self):
         self._mask = [[None for _ in range(self._mask_size[0])] for _ in range(self._mask_size[1])]
         self._mask[0][0] = "_"
-
-    def get_map(self):
-        return "/".join([self._map_dir, self._map])
 
     def get_scale_str(self, texture_type: str) -> str:
         size = self._dict_textures_info[texture_type]["texture_size"]
@@ -131,14 +132,14 @@ class Map:
         for key, values in self._dict_textures_info.items():
             size_str = self.get_scale_str(key)
             try:
-                os.mkdir("/".join([values["used_texture"], f"{size_str}"]))
+                os.mkdir(os.path.join(values["used_texture"], f"{size_str}"))
                 img_in_dir = os.listdir(values["original_image_path"])
                 for img in img_in_dir:
-                    pil_img = Image.open("/".join([values["original_image_path"], img]))
+                    pil_img = Image.open(os.path.join(values["original_image_path"], img))
                     size_tuple = self.get_scale_tuple(key)
                     new_image = pil_img.resize((size_tuple, size_tuple))
                     image_name = img.split(".")[0] + size_str + "." + img.split(".")[1]
-                    new_image.save("/".join([values["used_texture"], f"{size_str}", image_name]))
+                    new_image.save(os.path.join(values["used_texture"], f"{size_str}", image_name))
             except Exception as e:
                 print(e)
 
@@ -164,7 +165,11 @@ class Map:
                     ]:
                         green_boost, water_boost, mountain_boost = self._default_boost_values(
                             point=point,
-                            boost={"green_boost": green_boost, "water_boost": water_boost, "mountain_boost": mountain_boost}
+                            boost={
+                                "green_boost": green_boost,
+                                "water_boost": water_boost,
+                                "mountain_boost": mountain_boost,
+                            },
                         )
                 except IndexError:
                     pass
@@ -192,16 +197,9 @@ class Map:
                 biom_number += 1
                 self._mask[y_axis][x_axis] = curr_point
 
-        map_image.save(
-            "/".join([
-                self._map_dir,
-                f"{self._map}"
-            ])
-        )
-        return "/".join([
-            self._map_dir,
-            f"{self._map}"
-        ])
+        save_path = os.path.join(self._map_dir, f"{self._map}")
+        map_image.save(save_path)
+        return save_path
 
     def _generate_element(self, curr_point: str, biom_number: int) -> Image:
         if curr_point == SymbolAssociation.green:
@@ -254,22 +252,26 @@ class Map:
                 weights=resource_values["weight"].values()
             )[0]
             size_str_biom = self.get_scale_str("biom")
-            path_biom = "/".join(
-                [self._dict_textures_info["biom"]["used_texture"], size_str_biom, f"{biom_type}{size_str_biom}.jpg"])
+            path_biom = os.path.join(
+                self._dict_textures_info["biom"]["used_texture"],
+                size_str_biom,
+                f"{biom_type}{size_str_biom}.jpg",
+            )
             paste_image = Image.open(path_biom)
             if resource:
                 size_str_resource = self.get_scale_str("resources")
-                path_resource = "/".join([
+                path_resource = os.path.join(
                     self._dict_textures_info["resources"]["used_texture"],
-                    size_str_resource, f"{resource_type}{size_str_resource}.png"
-                ])
+                    size_str_resource,
+                    f"{resource_type}{size_str_resource}.png",
+                )
                 resource_image = Image.open(path_resource)
                 count = random.randint(0, 4)
                 for resource_number in range(count):
-                    x_axis_resource = random.randint(1, self._dict_textures_info["biom"]["texture_size"] -
-                                                 self._dict_textures_info["resources"]["texture_size"] - 1)
-                    y_axis_resource = random.randint(1, self._dict_textures_info["biom"]["texture_size"] -
-                                                 self._dict_textures_info["resources"]["texture_size"] - 1)
+                    x_max = self._dict_textures_info["biom"]["texture_size"] - self._dict_textures_info["resources"]["texture_size"] - 1
+                    x_axis_resource = random.randint(1, x_max)
+                    y_max = self._dict_textures_info["biom"]["texture_size"] - self._dict_textures_info["resources"]["texture_size"] - 1
+                    y_axis_resource = random.randint(1, y_max)
                     resource_element = {
                         "type": resource_type,
                         "size": self._dict_textures_info["resources"]["texture_size"],
@@ -377,20 +379,24 @@ class Map:
     def _generate_stone(self, biom_number: int) -> Image:
         stone_list = []
         size_str_biom = self.get_scale_str("biom")
-        path_biom = "/".join(
-            [self._dict_textures_info["biom"]["used_texture"], size_str_biom, f"mountain{size_str_biom}.jpg"])
+        path_biom = os.path.join(
+            self._dict_textures_info["biom"]["used_texture"],
+            size_str_biom,
+            f"mountain{size_str_biom}.jpg"
+        )
         paste_image = Image.open(path_biom)
         self._system["coord"][biom_number]["resources"]["stone"] = stone_list
         return paste_image
 
     def save_system(self):
-        with open("/".join([self._map_dir, "system.json"]), "w") as fp:
+        with open(os.path.join(self._map_dir, "system.json"), "w") as fp:
             json.dump(self._system, fp)
+        return os.path.join(self._map_dir, "system.json")
 
 
 if __name__ == '__main__':
-    mapp = Map(max_size_map_bioms=(50, 50))
+    mapp = Map(max_size_map_bioms=(50, 50), resources_size=32)
     img_path = mapp.generate_map()
-    mmaapp = mapp.get_map()
+    print(img_path)
     mapp.save_system()
 
