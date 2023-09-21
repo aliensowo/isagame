@@ -31,6 +31,7 @@ class Game(GameProperty):
             self.map_path = Logic.generate_map(max_size_map_bioms=(50, 50), biom_size=512, resources_size=32)
         else:
             self.map_path = Logic.get_random_map()
+        print("Start game")
 
     def new(self):
         # start a new game

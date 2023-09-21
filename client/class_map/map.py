@@ -117,6 +117,7 @@ class Map:
             pass
 
     def _generate_mask(self):
+        print("Prepare mask")
         self._mask = [[None for _ in range(self._mask_size[0])] for _ in range(self._mask_size[1])]
         self._mask[0][0] = "_"
 
@@ -129,6 +130,7 @@ class Map:
         return size
 
     def _scale_image(self):
+        print("Prepare textures")
         for key, values in self._dict_textures_info.items():
             size_str = self.get_scale_str(key)
             try:
@@ -144,6 +146,7 @@ class Map:
                 print(e)
 
     def generate_map(self):
+        print("Prepare map")
         os.mkdir(self._map_dir)
         map_image = Image.new(
             "RGB",
