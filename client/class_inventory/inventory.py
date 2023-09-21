@@ -24,9 +24,15 @@ class Inventory:
 
     def appendSlots(self):
         while len(self.inventory_slots) != self.totalSlots:
-            for x in range(WIDTH // 2 - ((INVTILESIZE + 2) * self.cols) // 2,
-                           WIDTH // 2 + ((INVTILESIZE + 2) * self.cols) // 2, INVTILESIZE + 2):
-                for y in range(UIHEIGTH, UIHEIGTH + INVTILESIZE * self.rows, INVTILESIZE + 2):
+            for x in range(
+                    WIDTH // 2 - ((INVTILESIZE + 2) * self.cols) // 2,
+                    WIDTH // 2 + ((INVTILESIZE + 2) * self.cols) // 2, INVTILESIZE + 2
+            ):
+                for y in range(
+                        UIHEIGTH,
+                        UIHEIGTH + INVTILESIZE * self.rows,
+                        INVTILESIZE + 2
+                ):
                     self.inventory_slots.append(InventorySlot(x, y))
 
         while len(self.armor_slots) != 4:
@@ -120,7 +126,7 @@ class Inventory:
             self.movingitem = None
             self.movingitemslot = None
 
-    def checkSlot(self, screen, mousepos):
+    def check_slot(self, screen, mousepos):
         for slot in self.inventory_slots + self.armor_slots + self.weapon_slots:
             if isinstance(slot, InventorySlot):
                 if slot.draw(screen).collidepoint(mousepos):
@@ -158,12 +164,13 @@ class InventorySlot:
         self.item = None
 
     def draw(self, screen):
-        return pg.draw.rect(screen, WHITE, (self.x, self.y, INVTILESIZE, INVTILESIZE))
+        return pg.draw.rect(screen, WHITE, (self.x+50, self.y+70, INVTILESIZE, INVTILESIZE))
 
     def draw_items(self, screen):
         if self.item is not None and not self.item.is_moving:
             self.image = pg.image.load(self.item.img).convert_alpha()
-            screen.blit(self.image, (self.x - 7, self.y - 7))
+            print(self.x, self.y)
+            screen.blit(self.image, (self.x - 7 + 50, self.y - 7 + 70))
         if self.item is not None and self.item.is_moving:
             mousepos1 = pg.mouse.get_pos()
             self.image = pg.image.load(self.item.img).convert_alpha()
@@ -201,7 +208,7 @@ class Equipable(InventoryItem):
         self.is_equipped = False
         self.equipped_to = None
 
-    def equip(self, target, inv=None):
+    def equip(self, target):
         self.is_equipped = True
         self.equipped_to = target
 
@@ -216,7 +223,7 @@ class Armor(Equipable):
         self.prot = prot
         self.slot = slot
 
-    def equip(self, target, inv):
+    def equip(self, inv, target):
         if inv.get_equip_slot(self).item is not None:
             inv.get_equip_slot(self).item.un_equip(inv)
         Equipable.equip(self, target)
@@ -238,7 +245,7 @@ class Weapon(Equipable):
         self.slot = slot
         self.wpn_type = wpn_type
 
-    def equip(self, target, inv):
+    def equip(self, inv, target):
         if inv.get_equip_slot(self).item is not None:
             inv.get_equip_slot(self).item.un_equip(inv)
         Equipable.equip(self, target)

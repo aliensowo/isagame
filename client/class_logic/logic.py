@@ -12,8 +12,8 @@ class Logic:
 
     @staticmethod
     def get_random_map():
-        maps = os.listdir(os.path.join(images_dir, "map_directory"))
-        return os.path.join(images_dir, "map_directory", random.choice(maps), "system.json")
+        # maps = os.listdir(os.path.join(images_dir, "map_directory"))
+        return os.path.join(images_dir, "map_directory", "g30_w25_m25_s(50, 50)_t1695254738", "system.json")
 
     @staticmethod
     def generate_map(max_size_map_bioms: Tuple = (50, 50), biom_size: int = 512, resources_size: int = 128):

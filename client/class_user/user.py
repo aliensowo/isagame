@@ -20,7 +20,7 @@ class User(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.game = game
 
-        self.image = pg.image.load(os.path.join(images_dir, "sprites/mario_thumb.png")).convert()
+        self.image = pg.image.load(os.path.join(images_dir, "sprites/mario_thumb.png")).convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT / 2
@@ -35,6 +35,7 @@ class User(pg.sprite.Sprite):
         self.armor = {'head': None, 'chest': None, 'legs': None, 'feet': None}
         self.weapon = None
         self.p_coins = 0
+        self.wood = 0
 
     def update(self, in_turn_flag, in_curr_node) -> Tuple:
         self.speedx = 0
@@ -126,3 +127,6 @@ class User(pg.sprite.Sprite):
 
     def add_coin(self):
         self.p_coins += 10
+
+    def add_wood(self):
+        self.wood += 5

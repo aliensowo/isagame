@@ -28,10 +28,12 @@ class Game:
     prot: pg.Surface
     atk: pg.Surface
     coins: pg.Surface
+    wood: pg.Surface
     hp_img: pg.Surface
     prot_img: pg.Surface
     atk_img: pg.Surface
     coin_img: pg.Surface
+    wood_img: pg.Surface
 
     def __init__(self, new_map: bool = False):
         pg.init()
@@ -128,7 +130,7 @@ class Game:
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 3:
                 if self.inventory.display_inventory:
                     mouse_pos = pg.mouse.get_pos()
-                    self.inventory.checkSlot(self.screen, mouse_pos)
+                    self.inventory.check_slot(self.screen, mouse_pos)
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 if self.inventory.display_inventory:
                     self.inventory.move_item(self.screen)
@@ -162,6 +164,8 @@ class Game:
                 self.screen, RED, [resource.rect.x + resource.healthcheck, resource.rect.y, delta_health, 10]
             )
             if resource.healthcheck == 0:
+                if resource.type == "wood":
+                    self.player.add_wood()
                 self.resource_group.remove(resource)
 
     def new_coin(self):
@@ -178,18 +182,22 @@ class Game:
         self.prot = self.myfont.render(f"{self.player.prot}", False, WHITE)
         self.atk = self.myfont.render(f"{self.player.atk}", False, WHITE)
         self.coins = self.myfont.render(f"{self.player.p_coins}", False, GOLD)
+        self.wood = self.myfont.render(f"{self.player.wood}", False, GOLD)
         self.hp_img = pg.image.load(os.path.join(images_dir, 'sprites/heart.png')).convert_alpha()
         self.prot_img = pg.image.load(os.path.join(images_dir, 'sprites/upg_shieldSmall.png')).convert_alpha()
         self.atk_img = pg.image.load(os.path.join(images_dir, 'sprites/upg_dagger.png')).convert_alpha()
         self.coin_img = pg.image.load(os.path.join(images_dir, 'sprites/coin1.png')).convert_alpha()
+        self.wood_img = pg.image.load(os.path.join(images_dir,'sprites/wood.png')).convert_alpha()
         self.screen.blit(self.hp, (STATPOSX, 25))
         self.screen.blit(self.prot, (STATPOSX, 75))
         self.screen.blit(self.atk, (STATPOSX, 125))
         self.screen.blit(self.coins, (STATPOSX, 175))
+        self.screen.blit(self.wood, (STATPOSX, 225))
         self.screen.blit(self.hp_img, (STATPOSX - 50, 5))
         self.screen.blit(self.prot_img, (STATPOSX - 50, 55))
         self.screen.blit(self.atk_img, (STATPOSX - 50, 105))
         self.screen.blit(self.coin_img, (STATPOSX - 55, 155))
+        self.screen.blit(self.wood_img, (STATPOSX - 40, 215))
         self.screen.blit(self.text, self.text_rect)
 
     def draw(self):
