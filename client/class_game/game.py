@@ -88,16 +88,6 @@ class Game:
                 os.path.join(images_dir, 'sprites/upg_chest.png'), 10, 80, 'chest',
             ),
         ]
-    
-    @property
-    def text(self):
-        return self.myfont.render(f'{self.curr_node}', True, GREEN, BLUE)
-    
-    @property
-    def text_rect(self):
-        obj = self.text.get_rect()
-        obj.center = (HEIGHT-self.myfont.get_height(), self.myfont.get_height())
-        return obj
 
     def load_static(self, node: int = START_NODE) -> Tuple:
         return Logic.get_image(node, self.map_path)
@@ -177,17 +167,25 @@ class Game:
         for y in range(0, HEIGHT, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
 
+    def draw_text(self):
+        biom_text = self.myfont.render(f'biom: {self.curr_node}', True, GREEN, BLUE)
+        biom_text_obj = biom_text.get_rect()
+        biom_text_obj.center = (HEIGHT - biom_text.get_size()[0], self.myfont.get_height())
+        self.screen.blit(biom_text, biom_text_obj)
+
     def draw_player_stats(self):
         self.hp = self.myfont.render(f"{self.player.hp}", False, RED)
         self.prot = self.myfont.render(f"{self.player.prot}", False, WHITE)
         self.atk = self.myfont.render(f"{self.player.atk}", False, WHITE)
         self.coins = self.myfont.render(f"{self.player.p_coins}", False, GOLD)
         self.wood = self.myfont.render(f"{self.player.wood}", False, GOLD)
+        self.bag = self.myfont.render(f"K", False, RED)
         self.hp_img = pg.image.load(os.path.join(images_dir, 'sprites/heart.png')).convert_alpha()
         self.prot_img = pg.image.load(os.path.join(images_dir, 'sprites/upg_shieldSmall.png')).convert_alpha()
         self.atk_img = pg.image.load(os.path.join(images_dir, 'sprites/upg_dagger.png')).convert_alpha()
         self.coin_img = pg.image.load(os.path.join(images_dir, 'sprites/coin1.png')).convert_alpha()
-        self.wood_img = pg.image.load(os.path.join(images_dir,'sprites/wood.png')).convert_alpha()
+        self.wood_img = pg.image.load(os.path.join(images_dir, 'sprites/wood.png')).convert_alpha()
+        self.bag_img = pg.image.load(os.path.join(images_dir, 'sprites/bag.png')).convert_alpha()
         self.screen.blit(self.hp, (STATPOSX, 25))
         self.screen.blit(self.prot, (STATPOSX, 75))
         self.screen.blit(self.atk, (STATPOSX, 125))
@@ -198,7 +196,8 @@ class Game:
         self.screen.blit(self.atk_img, (STATPOSX - 50, 105))
         self.screen.blit(self.coin_img, (STATPOSX - 55, 155))
         self.screen.blit(self.wood_img, (STATPOSX - 40, 215))
-        self.screen.blit(self.text, self.text_rect)
+        self.screen.blit(self.bag_img, (STATPOSX - 40, HEIGHT - 50))
+        self.screen.blit(self.bag, (STATPOSX - 40, HEIGHT - 50))
 
     def draw(self):
         # game loop draw
@@ -209,6 +208,7 @@ class Game:
         self.inventory.draw(self.screen)
         self.resource_group.draw(self.screen)
         self.draw_player_stats()
+        self.draw_text()
         # flipping display after drawing
         self.grind_resources()
         pg.display.flip()
