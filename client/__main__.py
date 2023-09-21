@@ -1,5 +1,5 @@
 import warnings
-from client.class_game.game import Game
+from client.class_game import Game
 
 
 warnings.filterwarnings("ignore")

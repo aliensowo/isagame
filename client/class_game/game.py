@@ -5,35 +5,18 @@ from typing import Tuple, Dict
 
 import pygame as pg
 from client.settings import *
-from client.class_inventory.inventory import Inventory, Weapon, Armor, Consumable
-from client.class_user.user import User
-from client.class_coin.coin import Coin
-from client.class_logic.logic import Logic
-from client.class_resourse.resource import Resources
+from client.class_inventory import Inventory, Weapon, Armor, Consumable
+from client.class_user import User
+from client.class_coin import Coin
+from client.class_logic import Logic
+from client.class_resourse import Resources
+from client.class_game.properties import GameProperty
 
 
 warnings.filterwarnings("ignore")
 
 
-class Game:
-
-    background: pg.Surface
-    all_sprites: pg.sprite.Group
-    all_coins: pg.sprite.Group
-    resource_group: pg.sprite.Group
-    player: User
-    coin: Coin
-    inventory: Inventory
-    hp: pg.Surface
-    prot: pg.Surface
-    atk: pg.Surface
-    coins: pg.Surface
-    wood: pg.Surface
-    hp_img: pg.Surface
-    prot_img: pg.Surface
-    atk_img: pg.Surface
-    coin_img: pg.Surface
-    wood_img: pg.Surface
+class Game(GameProperty):
 
     def __init__(self, new_map: bool = False):
         pg.init()

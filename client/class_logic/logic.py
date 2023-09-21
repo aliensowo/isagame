@@ -3,7 +3,7 @@ import json
 import random
 from typing import Dict, Tuple
 from client.settings import images_dir
-from client.class_map.map import Map
+from client.class_map import Map
 
 # map_path = os.path.join(images_dir, "map_directory/g30_w25_m25_s(50, 50)_t1694823254/system.json")
 
